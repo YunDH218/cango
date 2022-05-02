@@ -1,0 +1,53 @@
+// color set
+$themeColor: #30a065;
+$mainBGColor: #fff;
+$mainTextColor: #000;
+$subTextColor: #656565;
+$large: 20px;
+$medium: 16px;
+
+@font-face {
+  font-family: hanna;
+  src: url(../fonts/BMHANNA_11yrs_ttf.ttf);
+}
+
+body {
+  #map {
+    width: 100vw;
+    height: 100vh;
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    outline: none;
+  }
+  .map-control {
+    .auto-center-control {
+      width: 40px;
+      height: 40px;
+      position: absolute;
+      right: 0;
+      bottom: 24px;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      margin: 10px;
+      border-radius: 2px;
+      background-color: $mainBGColor;
+      box-shadow: rgb(0 0 0 / 30%) 0px 1px 4px -1px;
+      cursor: pointer;
+      >.material-icons {
+        color: $subTextColor;
+        font-size: 30px;
+        outline: none;
+      }
+      &.active >.material-icons {
+        color: $themeColor;
+      }
+    }
+  }
+  body {
+    
+  }
+}

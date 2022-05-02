@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <!-- Open Graph -->
+  <meta property="og:type" content="website" />
+  <meta property="og:site_name" content="Cango" />
+  <meta property="og:title" content="누구나, 어디든 Cango" />
+  <meta property="og:image" content="./images/cango_seo.jpg" />
+  <!-- Favicon -->
+  <link rel="icon" href="./favicon.png">
+  <!-- Reset css -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/reset-css@5.0.1/reset.min.css" />
+  <!-- Google Fonts & Material Icons -->
+  <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Black+Han+Sans&family=Nanum+Gothic:wght@400;700&display=swap" rel="stylesheet" />
+  <!-- Google Maps -->
+  <script async defer src="https://maps.googleapis.com/maps/api/js?key=AIzaSyDdzqBejsy_bV8gAblzZxblrOpuiAFwIC8&callback=initMap&v=weekly"></script>
+  <!-- JQuery API -->
+  <script src="https://code.jquery.com/jquery-3.6.0.slim.min.js" integrity="sha256-u7e5khyithlIdTpu22PHhENmPcRdFiHRjhAuHcs05RI=" crossorigin="anonymous"></script>
+
+  <!-- script -->
+  <script defer src="./js/map.js"></script>
+  <!-- style -->
+  <link rel="stylesheet" href="./style/main.scss" />
+
+  <title>Cango</title>
+</head>
+<body>
+  <!-- MAP -->
+  <div id="map"></div>
+  <!-- TOP GROUP -->
+  <section class="top-group">
+    <div class="btn-menu">
+      <div class="material-icons">menu</div>
+    </div>
+    <div class="search-text">어디로 갈까요?</div>
+    <div class="icon-search">
+      <div class="material-icons">search</div>
+    </div>
+  </section>
+  <!-- MENU WINDOW -->
+  <!-- <section class="menu-window">
+    <div class="dimmer hidden"></div>
+    <div class="container hidden">
+      <div class="user-profile">
+        <div class="user-profile-image">
+          <img src="./images/default-profile-image.png" alt="user-profile-image">
+        </div>
+        <div class="user-name">user</div>
+      </div>
+      <div class="map-option">
+        <div class="btn-bus">버스</div>
+        <div class="btn-subway">지하철</div>
+      </div>
+      <div class="boundary"></div>
+      <div class="menu">
+        <div class="btn-notice">공지사항</div>
+        <div class="btn-setting">설정</div>
+      </div>
+    </div>
+  </section> -->
+  <!-- SEARCH WINDOW -->
+  <!-- <section class="search-window hidden">
+    <div class="search-bar">
+      <div class="btn-back"><div class="material-icons">arrow_back</div></div>
+      <input type="text" class="search-text" placeholder="어디로 갈까요?">
+      <div class="btn-search"><div class="material-icons">search</div></div>
+    </div>
+  </section> -->
+</body>
+</html>
