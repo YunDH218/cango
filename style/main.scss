@@ -22,32 +22,174 @@ body {
     right: 0;
     outline: none;
   }
-  .map-control {
-    .auto-center-control {
-      width: 40px;
-      height: 40px;
-      position: absolute;
-      right: 0;
-      bottom: 24px;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      margin: 10px;
-      border-radius: 2px;
-      background-color: $mainBGColor;
-      box-shadow: rgb(0 0 0 / 30%) 0px 1px 4px -1px;
+  
+  font-family: 'hanna', sans-serif;
+  .top-group {
+    position: absolute;
+    width: 98vw;
+    height: 2em;
+    top: 3vh;
+    left: 1vw;
+    display: flex;
+    align-items: center;
+    font-size: $large;
+    box-sizing: border-box;
+    padding: 0 3vw;
+    border-radius: 1.5em;
+    background-color: $mainBGColor;
+    color: $mainTextColor;
+    box-shadow: 0.2em 0.2em 0.2em rgba($color: $mainTextColor, $alpha: 0.2);
+    &.hidden {
+      display: none;
+    }
+    .btn-menu {
+      width: 10%;
+      text-align: center;
       cursor: pointer;
-      >.material-icons {
-        color: $subTextColor;
-        font-size: 30px;
-        outline: none;
+      outline: none;
+      color: $mainTextColor;
+    }
+    .search-text {
+      width: 80%;
+      font-size: $large;
+      color: $subTextColor;
+    }
+    .icon-search {
+      width: 10%;
+      text-align: center;
+      cursor: pointer;
+      outline: none;
+      color: $mainTextColor;
+    }
+  }
+  // menu window
+  .menu-window {
+    &.hidden {
+      display: none;
+    }
+    .dimmer {
+      position: absolute;
+      width: 100vw;
+      height: 100vh;
+      top: 0;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      background-color: rgba($color: #000, $alpha: 0.5);
+      display: block;
+      transition: .6s;
+      &.hidden {
+        visibility: hidden;
+        opacity: 0;
       }
-      &.active >.material-icons {
-        color: $themeColor;
+    }
+    .container {
+      position: absolute;
+      width: 30vw;
+      height: 100vh;
+      top: 0;
+      bottom: 0;
+      left: 0;
+      box-sizing: border-box;
+      padding: 5vw;
+      background-color: #fff;
+      font-size: $large;
+      transition: .6s;
+      &.hidden {
+        visibility: hidden;
+        left: -70vw;
+      }
+      .user-profile {
+        display: flex;
+        align-items: center;
+        margin-bottom: 2em;
+        .user-profile-image {
+          $size: 2em;
+          width: $size;
+          height: $size;
+          border-radius: $size * 0.5;
+          background-color: darken($color: $mainBGColor, $amount: 10);
+          overflow: hidden;
+          img {
+            width: $size;
+            height: $size;
+          }
+        }
+        .user-name {
+          margin-left: 1em;
+        }
+      }
+      .map-option {
+        font-size: $large;
+        .btn-bus, .btn-subway {
+          margin-bottom: 1em;
+          cursor: pointer;
+        }
+      }
+      >.boundary {
+        margin-bottom: 1em;
+      }
+      .menu {
+        .btn-notice, .btn-setting {
+          font-size: $medium;
+          color: $subTextColor;
+          margin-bottom: 1em;
+          cursor: pointer;
+        }
       }
     }
   }
-  body {
-    
+  .search-window {
+    position: absolute;
+    width: 100vw;
+    height: 100vh;
+    top: 0;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    background-color: $mainBGColor;
+    transition: .5s;
+    &.hidden {
+      visibility: hidden;
+      opacity: 0;
+    }
+    >.search-bar {
+      position: absolute;
+      width: 98%;
+      height: 2em;
+      top: 3%;
+      left: 1%;
+      display: flex;
+      align-items: center;
+      font-size: $large;
+      box-sizing: border-box;
+      padding: 0 3%;
+      border-radius: 1.5em;
+      color: $mainTextColor;
+      box-shadow: 0.2em 0.2em 0.2em rgba($color: $mainTextColor, $alpha: 0.2);
+      .btn-back {
+        width: 10%;
+        text-align: center;
+        cursor: pointer;
+        outline: none;
+        color: $mainTextColor;
+      }
+      >.search-text {
+        width: 80%;
+        font-size: $large;
+        font-family: 'hanna', sans-serif;
+        color: $mainTextColor;
+        outline: none;
+        padding: 0;
+        border: none;
+      }
+      .btn-search {
+        width: 10%;
+        text-align: center;
+        cursor: pointer;
+        outline: none;
+        color: $mainTextColor;
+      }
+    }
   }
 }

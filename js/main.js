@@ -167,6 +167,41 @@ AutoPanControl = (controlDiv, map) => {
   });
 }
 
+// menu window
+const menuBtnEl = document.querySelector('.top-group .btn-menu');
+const menuEl = document.querySelector('.menu-window .container');
+const dimmerEl = document.querySelector('.menu-window .dimmer');
+
+menuBtnEl.addEventListener('click', () => {
+  menuEl.classList.remove('hidden');
+  dimmerEl.classList.remove('hidden');
+})
+dimmerEl.addEventListener('click', () => {
+  menuEl.classList.add('hidden');
+  dimmerEl.classList.add('hidden');
+})
+
+// search window
+const searchTxtEl = document.querySelector('.top-group .search-text');
+const searchIconEl = document.querySelector('.top-group .icon-search')
+const searchWindowEl = document.querySelector('.search-window');
+const backBtnEl = document.querySelector('.search-window .btn-back')
+const searchInputEl = document.querySelector('.search-window .search-text');
+
+searchIconEl.addEventListener('click', () => {
+  searchWindowEl.classList.remove('hidden');
+  searchInputEl.focus();
+});
+
+searchTxtEl.addEventListener('click', () => {
+  searchWindowEl.classList.remove('hidden');
+  searchInputEl.focus();
+});
+
+backBtnEl.addEventListener('click', () => {
+  searchWindowEl.classList.add('hidden');
+});
+
 // set Interval function
 setInterval(() => {
   if (isAutoPanControlActive) {
