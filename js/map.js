@@ -1,4 +1,5 @@
 let globalMap = null;
+let globalLDO = null;
 // Initialize and add the map
 initMap = () => {
   // The location of Seoul City Hall
@@ -17,10 +18,67 @@ initMap = () => {
     fullscreenControl: false
   });
   globalMap = map;
+  
   // auto pan control
   const autoPanControlDiv = document.createElement("div");
   AutoPanControl(autoPanControlDiv, map);
   map.controls[google.maps.ControlPosition.RIGHT_BOTTOM].push(autoPanControlDiv);
+
+  // set LocationDisplayOverlay
+  class LocationDisplayOverlay extends google.maps.OverlayView {
+    div;
+    position;
+    constructor(position) {
+      super();
+      this.position = position;
+    }
+    onAdd() {
+      this.div = document.createElement("div");
+      this.div.style.backgroundColor = "#30a065";
+      this.div.style.border = "3px solid #fff";
+      this.div.style.borderRadius = "10px";
+      this.div.style.boxShadow = "0 0 10px #30a065";
+      this.div.style.boxSizing = "border-box";
+      this.div.style.height = "20px";
+      this.div.style.position = "absolute";
+      this.div.style.width = "20px";
+      // Add the element to the "overlayLayer" pane.
+      const panes = this.getPanes();
+      panes.overlayLayer.appendChild(this.div);
+    }
+    draw() {
+      const overlayProjection = this.getProjection();
+      const pos = overlayProjection.fromLatLngToDivPixel(this.position);
+      if (this.div) {
+        this.div.style.left = pos.x + "px";
+        this.div.style.top = pos.y + "px";
+      }
+    }
+    onRemove() {
+      if (this.div) {
+        this.div.parentNode.removeChild(this.div);
+        delete this.div;
+      }
+    }
+    hide() {
+      if (this.div) {
+        this.div.style.visibility = "hidden";
+      }
+    }
+    show() {
+      if (this.div) {
+        this.div.style.visibility = "visible";
+      }
+    }
+    setPosition(position) {
+      this.position = position;
+      // this.onRemove();
+      this.draw();
+    }
+  }
+  globalLDO = new LocationDisplayOverlay(seoul);
+  globalLDO.setMap(map);
+  globalLDO.draw();
 }
 window.initMap = initMap;
 
@@ -34,6 +92,27 @@ panToCurrentLocation = (map) => {
           lng: position.coords.longitude,
         };
         map.panTo(pos);
+      },
+      () => {
+        handleLocationError(true);
+      }
+    );
+  } else {
+    // Browser doesn't support Geolocation
+    handleLocationError(false);
+  }
+}
+
+// set LocationDisplayOverlay position to current location
+setLDOPosition = (LocationDisplayOverlay) => {
+  if (navigator.geolocation) {
+    navigator.geolocation.getCurrentPosition(
+      (position) => {
+        const pos = {
+          lat: position.coords.latitude,
+          lng: position.coords.longitude,
+        };
+        LocationDisplayOverlay.setPosition(pos);
       },
       () => {
         handleLocationError(true);
@@ -88,15 +167,10 @@ AutoPanControl = (controlDiv, map) => {
   });
 }
 
-// set LocationDisplayOverlay
-// LocationDisplayOverlay.prototype = new google.maps.OverlayView();
-// const overlayDiv = document.createElement("div");
-// overlayDiv.style.width = "20px";
-// overlayDiv.style.height = "20px";
-
 // set Interval function
 setInterval(() => {
   if (isAutoPanControlActive) {
     panToCurrentLocation(globalMap)
   }
+  setLDOPosition(globalLDO);
 }, 1000)
