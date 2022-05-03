@@ -85,7 +85,7 @@ body {
     }
     .container {
       position: absolute;
-      width: 30vw;
+      width: 50vw;
       height: 100vh;
       top: 0;
       bottom: 0;
@@ -97,14 +97,14 @@ body {
       transition: .6s;
       &.hidden {
         visibility: hidden;
-        left: -70vw;
+        left: -50vw;
       }
       .user-profile {
         display: flex;
         align-items: center;
         margin-bottom: 2em;
         .user-profile-image {
-          $size: 2em;
+          $size: 40px;
           width: $size;
           height: $size;
           border-radius: $size * 0.5;
