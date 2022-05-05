@@ -1,11 +1,11 @@
-let globalMap = null;
-let globalLDO = null;
+let map;
+let locationIndicator = null;
 // Initialize and add the map
 initMap = () => {
   // The location of Seoul City Hall
   const seoul = { lat: 37.5666805, lng: 126.9784147 };
   // The map, centered at Seoul
-  const map = new google.maps.Map(document.getElementById("map"), {
+  map = new google.maps.Map(document.getElementById("map"), {
     zoom: 12,
     center: seoul,
     zoomControlOptions: {
@@ -17,7 +17,6 @@ initMap = () => {
     mapTypeControl: false,
     fullscreenControl: false
   });
-  globalMap = map;
   
   // auto pan control
   const autoPanControlDiv = document.createElement("div");
@@ -72,15 +71,48 @@ initMap = () => {
     }
     setPosition(position) {
       this.position = position;
-      // this.onRemove();
-      this.draw();
     }
   }
-  globalLDO = new LocationDisplayOverlay(seoul);
-  globalLDO.setMap(map);
-  globalLDO.draw();
+  locationIndicator = new LocationDisplayOverlay(seoul);
+  locationIndicator.setMap(map);
+
+  // place search
+  const searchInputEl = document.querySelector(".search-window .search-text");
+  const searchBtnEl = document.querySelector(".search-window .btn-search");
+  searchBtnEl.addEventListener("click", () => {
+    const request = {
+      query: searchInputEl.value,
+      fields: ["name", "geometry"]
+    };
+    let service = new google.maps.places.PlacesService(map);
+    service.findPlaceFromQuery(request, (results, status) => {
+      if (status === google.maps.places.PlacesServiceStatus.OK && results) {
+        for (let i = 0; i < results.length; i++) {
+          createMarker(results[i]);
+        }
+      isAutoPanControlActive = false;
+      map.setCenter(results[0].geometry.location);
+    }
+  });
+  })
+
 }
 window.initMap = initMap;
+
+// createMarker
+function createMarker(place) {
+  if (!place.geometry || !place.geometry.location) return;
+
+  const marker = new google.maps.Marker({
+    map,
+    position: place.geometry.location,
+  });
+
+  google.maps.event.addListener(marker, "click", () => {
+    infowindow.setContent(place.name || "");
+    infowindow.open(map);
+  });
+}
 
 // Pan to Current Location
 panToCurrentLocation = (map) => {
@@ -186,16 +218,13 @@ const searchTxtEl = document.querySelector('.top-group .search-text');
 const searchIconEl = document.querySelector('.top-group .icon-search')
 const searchWindowEl = document.querySelector('.search-window');
 const backBtnEl = document.querySelector('.search-window .btn-back')
-const searchInputEl = document.querySelector('.search-window .search-text');
 
 searchIconEl.addEventListener('click', () => {
   searchWindowEl.classList.remove('hidden');
-  searchInputEl.focus();
 });
 
 searchTxtEl.addEventListener('click', () => {
   searchWindowEl.classList.remove('hidden');
-  searchInputEl.focus();
 });
 
 backBtnEl.addEventListener('click', () => {
@@ -205,7 +234,7 @@ backBtnEl.addEventListener('click', () => {
 // set Interval function
 setInterval(() => {
   if (isAutoPanControlActive) {
-    panToCurrentLocation(globalMap)
+    panToCurrentLocation(map)
   }
-  setLDOPosition(globalLDO);
+  setLDOPosition(locationIndicator);
 }, 1000)
