@@ -76,43 +76,55 @@ initMap = () => {
   locationIndicator = new LocationDisplayOverlay(seoul);
   locationIndicator.setMap(map);
 
+  // search window
+  const searchTxtEl = document.querySelector('.top-group .search-text');
+  const searchIconEl = document.querySelector('.top-group .icon-search')
+  const searchWindowEl = document.querySelector('.search-window');
+  const backBtnEl = document.querySelector('.search-window .btn-back')
+
+  searchIconEl.addEventListener('click', () => {
+    searchWindowEl.classList.remove('hidden');
+  });
+
+  searchTxtEl.addEventListener('click', () => {
+    searchWindowEl.classList.remove('hidden');
+  });
+
+  backBtnEl.addEventListener('click', () => {
+    searchWindowEl.classList.add('hidden');
+  });
+
   // place search
   const searchInputEl = document.querySelector(".search-window .search-text");
   const searchBtnEl = document.querySelector(".search-window .btn-search");
+  const resultContainerEl = document.querySelector(".search-window .result-container");
+
+  searchInputEl.addEventListener("input", () => {
+    resultContainerEl.innerHTML = '';
+  })
+
   searchBtnEl.addEventListener("click", () => {
     const request = {
       query: searchInputEl.value,
       fields: ["name", "geometry"]
     };
     let service = new google.maps.places.PlacesService(map);
-    service.findPlaceFromQuery(request, (results, status) => {
+    service.textSearch(request, (results, status) => {
       if (status === google.maps.places.PlacesServiceStatus.OK && results) {
         for (let i = 0; i < results.length; i++) {
-          createMarker(results[i]);
+          console.log(results[i]);
+          makeResultElement(resultContainerEl, results[i], () => {
+            createMarker(results[0].geometry.location);
+            isAutoPanControlActive = false;
+            map.setCenter(results[0].geometry.location);
+          })
         }
-      isAutoPanControlActive = false;
-      map.setCenter(results[0].geometry.location);
-    }
-  });
+      }
+    });
   })
 
 }
 window.initMap = initMap;
-
-// createMarker
-function createMarker(place) {
-  if (!place.geometry || !place.geometry.location) return;
-
-  const marker = new google.maps.Marker({
-    map,
-    position: place.geometry.location,
-  });
-
-  google.maps.event.addListener(marker, "click", () => {
-    infowindow.setContent(place.name || "");
-    infowindow.open(map);
-  });
-}
 
 // Pan to Current Location
 panToCurrentLocation = (map) => {
@@ -213,23 +225,44 @@ dimmerEl.addEventListener('click', () => {
   dimmerEl.classList.add('hidden');
 })
 
-// search window
-const searchTxtEl = document.querySelector('.top-group .search-text');
-const searchIconEl = document.querySelector('.top-group .icon-search')
-const searchWindowEl = document.querySelector('.search-window');
-const backBtnEl = document.querySelector('.search-window .btn-back')
+// create result element
+makeResultElement = (container, result, clickEvent) => {
+  const elementUI = document.createElement('div');
+  elementUI.style.backgroundColor = "#fff";
+  elementUI.style.borderBottom = "1px solid #656565";
+  elementUI.style.overflow = "hidden";
+  elementUI.style.padding = "10px 40px 10px";
+  elementUI.addEventListener("click", clickEvent)
 
-searchIconEl.addEventListener('click', () => {
-  searchWindowEl.classList.remove('hidden');
-});
+  const elementTitle = document.createElement('h1');
+  elementTitle.textContent = result.name;
+  elementTitle.style.marginBottom = "5px";
 
-searchTxtEl.addEventListener('click', () => {
-  searchWindowEl.classList.remove('hidden');
-});
+  const elementText = document.createElement('span');
+  elementText.textContent = result.formatted_address;
+  elementText.style.color = "#656565";
+  elementText.style.fontFamily = "sans-serif";
+  elementText.style.fontSize = "10px";
 
-backBtnEl.addEventListener('click', () => {
-  searchWindowEl.classList.add('hidden');
-});
+  elementUI.appendChild(elementTitle);
+  elementUI.appendChild(elementText);
+  container.appendChild(elementUI);
+}
+
+// createMarker
+function createMarker(place) {
+  if (!place.geometry || !place.geometry.location) return;
+
+  const marker = new google.maps.Marker({
+    map,
+    position: place.geometry.location,
+  });
+
+  google.maps.event.addListener(marker, "click", () => {
+    infowindow.setContent(place.name || "");
+    infowindow.open(map);
+  });
+}
 
 // set Interval function
 setInterval(() => {

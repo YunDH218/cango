@@ -11,6 +11,12 @@ $medium: 16px;
   src: url(../fonts/BMHANNA_11yrs_ttf.ttf);
 }
 
+h1 {
+  color: $mainTextColor;
+  font-family: 'hanna', sans-serif;
+  font-size: $large;
+}
+
 body {
   #map {
     width: 100vw;
@@ -191,6 +197,10 @@ body {
         outline: none;
         color: $mainTextColor;
       }
+    }
+    .result-container {
+      margin-top: 5%;
+      width: 100%;
     }
   }
 }
