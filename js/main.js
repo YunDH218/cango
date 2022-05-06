@@ -1,5 +1,20 @@
 let map;
+let infowindow;
 let locationIndicator = null;
+let markersArray = [];
+// search
+const searchTxtEl = document.querySelector('.top-group .search-text');
+const searchIconEl = document.querySelector('.top-group .icon-search')
+const searchWindowEl = document.querySelector('.search-window');
+// search window
+const backBtnEl = document.querySelector('.search-window .btn-back')
+const searchInputEl = document.querySelector(".search-window .search-text");
+const resultContainerEl = document.querySelector(".search-window .result-container");
+// menu
+const menuBtnEl = document.querySelector('.top-group .btn-menu');
+const menuEl = document.querySelector('.menu-window .container');
+const dimmerEl = document.querySelector('.menu-window .dimmer');
+
 // Initialize and add the map
 initMap = () => {
   // The location of Seoul City Hall
@@ -77,11 +92,6 @@ initMap = () => {
   locationIndicator.setMap(map);
 
   // search window
-  const searchTxtEl = document.querySelector('.top-group .search-text');
-  const searchIconEl = document.querySelector('.top-group .icon-search')
-  const searchWindowEl = document.querySelector('.search-window');
-  const backBtnEl = document.querySelector('.search-window .btn-back')
-
   searchIconEl.addEventListener('click', () => {
     searchWindowEl.classList.remove('hidden');
   });
@@ -91,19 +101,21 @@ initMap = () => {
   });
 
   backBtnEl.addEventListener('click', () => {
+    clearMarkers();
+    if (searchWindowEl.classList.contains('result-view')) {
+      searchWindowEl.classList.remove('result-view');
+      return;
+    }
+    searchInputEl.value = '';
+    resultContainerEl.innerHTML = '';
     searchWindowEl.classList.add('hidden');
   });
 
   // place search
-  const searchInputEl = document.querySelector(".search-window .search-text");
-  const searchBtnEl = document.querySelector(".search-window .btn-search");
-  const resultContainerEl = document.querySelector(".search-window .result-container");
-
+  infowindow = new google.maps.InfoWindow();
   searchInputEl.addEventListener("input", () => {
     resultContainerEl.innerHTML = '';
-  })
-
-  searchBtnEl.addEventListener("click", () => {
+    placeSearchMode();
     const request = {
       query: searchInputEl.value,
       fields: ["name", "geometry"]
@@ -112,10 +124,10 @@ initMap = () => {
     service.textSearch(request, (results, status) => {
       if (status === google.maps.places.PlacesServiceStatus.OK && results) {
         for (let i = 0; i < results.length; i++) {
-          console.log(results[i]);
           makeResultElement(resultContainerEl, results[i], () => {
-            createMarker(results[0].geometry.location);
+            createMarker(results[0]);
             isAutoPanControlActive = false;
+            placeFocusMode();
             map.setCenter(results[0].geometry.location);
           })
         }
@@ -212,10 +224,6 @@ AutoPanControl = (controlDiv, map) => {
 }
 
 // menu window
-const menuBtnEl = document.querySelector('.top-group .btn-menu');
-const menuEl = document.querySelector('.menu-window .container');
-const dimmerEl = document.querySelector('.menu-window .dimmer');
-
 menuBtnEl.addEventListener('click', () => {
   menuEl.classList.remove('hidden');
   dimmerEl.classList.remove('hidden');
@@ -236,11 +244,13 @@ makeResultElement = (container, result, clickEvent) => {
 
   const elementTitle = document.createElement('h1');
   elementTitle.textContent = result.name;
+  elementTitle.style.cursor = "pointer";
   elementTitle.style.marginBottom = "5px";
 
   const elementText = document.createElement('span');
   elementText.textContent = result.formatted_address;
   elementText.style.color = "#656565";
+  elementText.style.cursor = "pointer";
   elementText.style.fontFamily = "sans-serif";
   elementText.style.fontSize = "10px";
 
@@ -249,19 +259,87 @@ makeResultElement = (container, result, clickEvent) => {
   container.appendChild(elementUI);
 }
 
+// place focus mode
+placeFocusMode = () => {
+  searchWindowEl.classList.add('result-view');
+}
+
+// place search mode
+placeSearchMode = () => {
+  if (searchWindowEl.classList.contains('result-view')) {
+    searchWindowEl.classList.remove('result-view');
+  }
+}
+
 // createMarker
 function createMarker(place) {
-  if (!place.geometry || !place.geometry.location) return;
-
   const marker = new google.maps.Marker({
     map,
     position: place.geometry.location,
   });
+  markersArray.push(marker);
+  const content = document.createElement("div");
+  content.style.width = "200px";
+  content.style.padding = "5px";
 
+  const nameEl = document.createElement("h1");
+  nameEl.textContent = place.name;
+  nameEl.style.marginBottom = "5px";
+
+  const addressEl = document.createElement("span");
+  addressEl.textContent = place.formatted_address;
+  addressEl.style.color = "#656565";
+  addressEl.style.fontFamily = "sans-serif";
+  addressEl.style.fontSize = "10px";
+  addressEl.style.marginBottom = "15px";
+
+  const btnGroup = document.createElement("div");
+  btnGroup.style.display = "flex";
+  btnGroup.style.flexDirection = "row-reverse";
+
+  const btnStart = document.createElement("div");
+  btnStart.textContent = "출발";
+  btnStart.style.backgroundColor = "#30a065";
+  btnStart.style.borderRadius = "3px";
+  btnStart.style.color = "#fff";
+  btnStart.style.cursor = "pointer";
+  btnStart.style.fontFamily = "sans-serif";
+  btnStart.style.fontSize = "14px"
+  btnStart.style.fontWeight = "700";
+  btnStart.style.marginLeft = "10px";
+  btnStart.style.padding = "5px";
+
+  const btnArrival = document.createElement("div");
+  btnArrival.textContent = "도착";
+  btnArrival.style.backgroundColor = "#30a065";
+  btnArrival.style.borderRadius = "3px";
+  btnArrival.style.color = "#fff";
+  btnArrival.style.cursor = "pointer";
+  btnArrival.style.fontFamily = "sans-serif";
+  btnArrival.style.fontSize = "14px"
+  btnArrival.style.fontWeight = "700";
+  btnArrival.style.marginLeft = "10px";
+  btnArrival.style.padding = "5px";
+
+  btnGroup.appendChild(btnArrival);
+  btnGroup.appendChild(btnStart);
+
+  content.appendChild(nameEl);
+  content.appendChild(addressEl);
+  content.appendChild(btnGroup);
+  
   google.maps.event.addListener(marker, "click", () => {
-    infowindow.setContent(place.name || "");
-    infowindow.open(map);
+    infowindow.setContent(content);
+    infowindow.open(map, marker);
   });
+}
+
+// Remove All Marker
+function clearMarkers() {
+  for (var i = 0; i < markersArray.length; i++ ) {
+    markersArray[i].setMap(null);
+  }
+  markersArray.length = 0;
 }
 
 // set Interval function
