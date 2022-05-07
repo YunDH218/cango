@@ -145,7 +145,7 @@ body {
       }
     }
   }
-  // search-window
+  // search window
   .search-window {
     position: absolute;
     width: 100vw;
@@ -209,5 +209,93 @@ body {
       margin-top: 5em;
       width: 100%;
     }
+  }
+  // route window
+  .route-window {
+    &.hidden {
+      visibility: hidden;
+    }
+    &.set-point-mode {
+      >.result-container {
+        visibility: hidden;
+      }
+    }
+    .result-container {
+      position: absolute;
+      width: 100vw;
+      height: 100vh;
+      top: 0;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      background-color: $mainBGColor;
+      padding-top: 8em;
+      box-sizing: border-box;
+    }
+    .set-point {
+      position: absolute;
+      width: 98%;
+      height: 5em;
+      top: 3%;
+      left: 1%;
+      overflow: visible;
+      .start-point {
+        height: 2em;
+        display: flex;
+        align-items: center;
+        font-size: $large;
+        margin-bottom: 1em;
+        .btn-back {
+          width: 1.5em;
+          height: 1.5em;
+          background-color: $mainBGColor;
+          text-align: center;
+          vertical-align: center;
+          cursor: pointer;
+          outline: none;
+          color: $mainTextColor;
+          padding: 4px;
+          border-radius: 50%;
+          margin: auto;
+          box-sizing: border-box;
+          box-shadow: 0.2em 0.2em 0.2em rgba($color: $mainTextColor, $alpha: 0.2);
+        }
+        .start-point--search {
+          width: 90%;
+          height: 100%;
+          background-color: $mainBGColor;
+          font-size: $large;
+          font-family: 'hanna', sans-serif;
+          color: $mainTextColor;
+          outline: none;
+          padding: 0 3%;
+          border: none;
+          border-radius: 1.5em;
+          box-sizing: border-box;
+          box-shadow: 0.2em 0.2em 0.2em rgba($color: $mainTextColor, $alpha: 0.2);
+        }
+      }
+      .arrival-point {
+        height: 2em;
+        display: flex;
+        align-items: center;
+        font-size: $large;
+        .arrival-point--search {
+          width: 90%;
+          height: 100%;
+          background-color: $mainBGColor;
+          font-size: $large;
+          font-family: 'hanna', sans-serif;
+          color: $mainTextColor;
+          outline: none;
+          padding: 0 3%;
+          border: none;
+          border-radius: 1.5em;
+          margin-left: 10%;
+          box-sizing: border-box;
+          box-shadow: 0.2em 0.2em 0.2em rgba($color: $mainTextColor, $alpha: 0.2);
+        }
+      }
+    }   
   }
 }

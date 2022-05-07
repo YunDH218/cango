@@ -2,18 +2,30 @@ let map;
 let infowindow;
 let locationIndicator = null;
 let markersArray = [];
-// search
+let startPoint;
+let arrivalPoint;
+let directionsService;
+let directionsRenderer;
+let stepDisplay;
+// top-group search
+const topGroupEl = document.querySelector('.top-group');
 const searchTxtEl = document.querySelector('.top-group .search-text');
-const searchIconEl = document.querySelector('.top-group .icon-search')
-const searchWindowEl = document.querySelector('.search-window');
+const searchIconEl = document.querySelector('.top-group .icon-search');
 // search window
-const backBtnEl = document.querySelector('.search-window .btn-back')
+const searchWindowEl = document.querySelector('.search-window');
+const backBtnEl = document.querySelector('.search-window .btn-back');
 const searchInputEl = document.querySelector(".search-window .search-text");
 const resultContainerEl = document.querySelector(".search-window .result-container");
 // menu
 const menuBtnEl = document.querySelector('.top-group .btn-menu');
 const menuEl = document.querySelector('.menu-window .container');
 const dimmerEl = document.querySelector('.menu-window .dimmer');
+// route
+const routeWindowEl = document.querySelector('.route-window');
+const routeBtnBackEl = document.querySelector('.route-window .btn-back');
+const startPointInputEl = document.querySelector('.route-window .start-point--search');
+const arrivalPointInputEl = document.querySelector('.route-window .arrival-point--search');
+const routeResultContainerEl = document.querySelector('.route-window .result-container');
 
 // Initialize and add the map
 initMap = () => {
@@ -103,17 +115,18 @@ initMap = () => {
   backBtnEl.addEventListener('click', () => {
     clearMarkers();
     if (searchWindowEl.classList.contains('result-view')) {
-      searchWindowEl.classList.remove('result-view');
+      placeSearchMode();
       return;
     }
     searchInputEl.value = '';
     resultContainerEl.innerHTML = '';
-    searchWindowEl.classList.add('hidden');
+    isAutoPanControlActive = true;
+    mainMode();
   });
 
   // place search
   infowindow = new google.maps.InfoWindow();
-  searchInputEl.addEventListener("input", () => {
+  searchInputEl.addEventListener('input', () => {
     resultContainerEl.innerHTML = '';
     placeSearchMode();
     const request = {
@@ -125,16 +138,63 @@ initMap = () => {
       if (status === google.maps.places.PlacesServiceStatus.OK && results) {
         for (let i = 0; i < results.length; i++) {
           makeResultElement(resultContainerEl, results[i], () => {
-            createMarker(results[0]);
+            createMarker(results[i]);
             isAutoPanControlActive = false;
             placeFocusMode();
-            map.setCenter(results[0].geometry.location);
+            map.panTo(results[i].geometry.location);
           })
         }
       }
     });
-  })
+  });
+  startPointInputEl.addEventListener('input', () => {
+    routeResultContainerEl.innerHTML = '';
+    routeSearchMode();
+    const request = {
+      query: startPointInputEl.value,
+      fields: ["name", "geometry"]
+    };
+    let service = new google.maps.places.PlacesService(map);
+    service.textSearch(request, (results, status) => {
+      if (status === google.maps.places.PlacesServiceStatus.OK && results) {
+        for (let i = 0; i < results.length; i++) {
+          makeResultElement(routeResultContainerEl, results[i], () => {
+            createMarker(results[i]);
+            isAutoPanControlActive = false;
+            routeSetMode();
+            map.panTo(results[i].geometry.location);
+          })
+        }
+      }
+    })
+    
+  });
+  arrivalPointInputEl.addEventListener('input', () => {
+    routeResultContainerEl.innerHTML = '';
+    routeSearchMode();
+    const request = {
+      query: arrivalPointInputEl.value,
+      fields: ["name", "geometry"]
+    };
+    let service = new google.maps.places.PlacesService(map);
+    service.textSearch(request, (results, status) => {
+      if (status === google.maps.places.PlacesServiceStatus.OK && results) {
+        for (let i = 0; i < results.length; i++) {
+          makeResultElement(routeResultContainerEl, results[i], () => {
+            createMarker(results[i]);
+            isAutoPanControlActive = false;
+            routeSetMode();
+            map.panTo(results[i].geometry.location);
+          })
+        }
+      }
+    })
+  });
 
+  // directions
+  directionsService = new google.maps.DirectionsService();
+  directionsRenderer = new google.maps.DirectionsRenderer({ map: map });
+  stepDisplay = new google.maps.InfoWindow();
 }
 window.initMap = initMap;
 
@@ -233,6 +293,13 @@ dimmerEl.addEventListener('click', () => {
   dimmerEl.classList.add('hidden');
 })
 
+// route window
+routeBtnBackEl.addEventListener('click', () => {
+  placeFocusMode();
+  startPoint = undefined;
+  arrivalPoint = undefined;
+})
+
 // create result element
 makeResultElement = (container, result, clickEvent) => {
   const elementUI = document.createElement('div');
@@ -259,15 +326,89 @@ makeResultElement = (container, result, clickEvent) => {
   container.appendChild(elementUI);
 }
 
-// place focus mode
-placeFocusMode = () => {
-  searchWindowEl.classList.add('result-view');
+// <SET UI MODE>
+// main mode
+mainMode = () => {  // topGroup: visible, searchWindow: hidden, routeWindow: hidden
+  if (topGroupEl.classList.contains('hidden')) {
+    topGroupEl.classList.remove('hidden');
+  }
+  if (!searchWindowEl.classList.contains('hidden')) {
+    searchWindowEl.classList.add('hidden');
+  }
+  if (routeWindowEl.classList.contains('set-point-mode')) {
+    routeWindowEl.classList.remove('set-point-mode');
+  }
+  if (!routeWindowEl.classList.contains('hidden')) {
+    routeWindowEl.classList.add('hidden');
+  }
 }
 
-// place search mode
-placeSearchMode = () => {
+// place focus mode
+placeFocusMode = () => {  // topGroup: hidden, searchWindow: result-view, routeWindow: hidden
+  if (!topGroupEl.classList.contains('hidden')) {
+    topGroupEl.classList.add('hidden');
+  }
+  if (searchWindowEl.classList.contains('hidden')) {
+    searchWindowEl.classList.remove('hidden');
+  }
+  if (!searchWindowEl.classList.contains('result-view')) {
+    searchWindowEl.classList.add('result-view');
+  }
+  if (routeWindowEl.classList.contains('set-point-mode')) {
+    routeWindowEl.classList.remove('set-point-mode');
+  }
+  if (!routeWindowEl.classList.contains('hidden')) {
+    routeWindowEl.classList.add('hidden');
+  }
+}
+
+// search place mode
+placeSearchMode = () => { // topGroup: hidden, searchWindow: visible, routeWindow: hidden
+  if (!topGroupEl.classList.contains('hidden')) {
+    topGroupEl.classList.add('hidden');
+  }
+  if (searchWindowEl.classList.contains('hidden')) {
+    searchWindowEl.classList.remove('hidden');
+  }
   if (searchWindowEl.classList.contains('result-view')) {
     searchWindowEl.classList.remove('result-view');
+  }
+  if (routeWindowEl.classList.contains('set-point-mode')) {
+    routeWindowEl.classList.remove('set-point-mode');
+  }
+  if (!routeWindowEl.classList.contains('hidden')) {
+    routeWindowEl.classList.add('hidden');
+  }
+}
+
+// set route mode
+routeSetMode = () => {  // topGroup: hidden, searchWindow: hidden, routeWindow: set-point-mode
+  if (!topGroupEl.classList.contains('hidden')) {
+    topGroupEl.classList.add('hidden');
+  }
+  if (!searchWindowEl.classList.contains('hidden')) {
+    searchWindowEl.classList.add('hidden');
+  }
+  if (routeWindowEl.classList.contains('hidden')) {
+    routeWindowEl.classList.remove('hidden');
+  }
+  if (!routeWindowEl.classList.contains('set-point-mode')) {
+    routeWindowEl.classList.add('set-point-mode');
+  }
+}
+// search route mode
+routeSearchMode = () => { // topGroup: hidden, searchWindow: hidden, routeWindow: visible
+  if (!topGroupEl.classList.contains('hidden')) {
+    topGroupEl.classList.add('hidden');
+  }
+  if (!searchWindowEl.classList.contains('hidden')) {
+    searchWindowEl.classList.add('hidden');
+  }
+  if (routeWindowEl.classList.contains('hidden')) {
+    routeWindowEl.classList.remove('hidden');
+  }
+  if (routeWindowEl.classList.contains('set-point-mode')) {
+    routeWindowEl.classList.remove('set-point-mode');
   }
 }
 
@@ -308,6 +449,21 @@ function createMarker(place) {
   btnStart.style.fontWeight = "700";
   btnStart.style.marginLeft = "10px";
   btnStart.style.padding = "5px";
+  btnStart.addEventListener("click", () => {
+    routeSetMode();
+    startPointInputEl.value = place.name;
+    startPoint = place;
+    infowindow.close();
+    if (startPoint && arrivalPoint) {
+      calculateAndDisplayRoute(
+        directionsRenderer,
+        directionsService,
+        markersArray,
+        stepDisplay,
+        map
+      );
+    }
+  })
 
   const btnArrival = document.createElement("div");
   btnArrival.textContent = "도착";
@@ -320,6 +476,21 @@ function createMarker(place) {
   btnArrival.style.fontWeight = "700";
   btnArrival.style.marginLeft = "10px";
   btnArrival.style.padding = "5px";
+  btnArrival.addEventListener("click", () => {
+    routeSetMode();
+    arrivalPointInputEl.value = place.name;
+    arrivalPoint = place;
+    infowindow.close();
+    if (startPoint && arrivalPoint) {
+      calculateAndDisplayRoute(
+        directionsRenderer,
+        directionsService,
+        markersArray,
+        stepDisplay,
+        map
+      );
+    }
+  })
 
   btnGroup.appendChild(btnArrival);
   btnGroup.appendChild(btnStart);
@@ -328,8 +499,9 @@ function createMarker(place) {
   content.appendChild(addressEl);
   content.appendChild(btnGroup);
   
+  infowindow.setContent(content);
+  infowindow.open(map, marker);
   google.maps.event.addListener(marker, "click", () => {
-    infowindow.setContent(content);
     infowindow.open(map, marker);
   });
 }
@@ -340,6 +512,55 @@ function clearMarkers() {
     markersArray[i].setMap(null);
   }
   markersArray.length = 0;
+}
+
+// directions
+calculateAndDisplayRoute = (
+  directionsRenderer,
+  directionsService,
+  markersArray,
+  stepDisplay,
+  map
+) => {
+  clearMarkers();
+  directionsService
+    .route({
+      origin: startPoint.geometry.location,
+      destination: arrivalPoint.geometry.location,
+      travelMode: google.maps.TravelMode.TRANSIT
+    })
+    .then((result) => {
+      directionsRenderer.setDirections(result);
+      showSteps(result, markersArray, stepDisplay, map);
+    })
+    .catch((e) => {
+      window.alert("Directions request failed due to " + e);
+    });
+}
+showSteps = (directionResult, markersArray, stepDisplay, map) => {
+  const myRoute = directionResult.routes[0].legs[0];
+
+  for (let i = 0; i < myRoute.steps.length; i++) {
+    const marker = (markersArray[i] =
+      markersArray[i] || new google.maps.Marker());
+
+    marker.setMap(map);
+    marker.setPosition(myRoute.steps[i].start_location);
+    attachInstructionText(
+      stepDisplay,
+      marker,
+      myRoute.steps[i].instructions,
+      map
+    );
+  }
+}
+attachInstructionText = (stepDisplay, marker, text, map) => {
+  google.maps.event.addListener(marker, "click", () => {
+    // Open an info window when the marker is clicked on, containing the text
+    // of the step.
+    stepDisplay.setContent(text);
+    stepDisplay.open(map, marker);
+  });
 }
 
 // set Interval function
