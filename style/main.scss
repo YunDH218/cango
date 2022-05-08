@@ -343,11 +343,12 @@ body {
         .floor-selector {
           position: relative;
           display: flex;
+          
           .btn-floor {
             height: 4.5vh;
             color: #656565;
             background-color: #eee;
-            padding: 10px 20px;
+            padding: 10px 5px;
             border-radius: 10px 10px 0 0;
             margin-top: .5vh;
             box-sizing: border-box;

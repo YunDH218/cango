@@ -1,8 +1,8 @@
 export class StationManager {
   stations = [];
   constructor() {}
-  appendStation(line, name, floorNum, imgSrc) {
-    this.stations.push(new Station(line, name, floorNum, imgSrc));
+  appendStation(line, name, floorNum, imgSrc, elevatorLocation) {
+    this.stations.push(new Station(line, name, floorNum, imgSrc, elevatorLocation));
   }
   getStation(name) {
     for (let i = 0; i < this.stations.length; i++) {
@@ -60,15 +60,15 @@ stationManager.appendStation(["인천 1호선"], "부평", [-4, 0], [], [{lat: 0
 stationManager.appendStation(["인천 1호선"], "동수", [-4, -1], [], [{lat: 0, lng: 0}]); // 2번 출입구 근처
 stationManager.appendStation(["인천 1호선"], "부평삼거리", [-4, -1], [], [{lat: 0, lng: 0}]); // 2번 출입구 근처
 stationManager.appendStation(["인천 1호선"], "간석오거리", [-4, -1], [], [{lat: 0, lng: 0}]); // 5번 출입구 근처
-stationManager.appendStation(["인천 1호선", "인천 2호선"], "인천시청", [-4, -1], [require("../images/station_인천 1호선_인천시청_-4.jpg")], [{lat: 0, lng: 0}]); // 9번 출입구 근처 <환승역>
+stationManager.appendStation(["인천 1호선", "인천 2호선"], "인천시청", [-4, -1], [require("../images/station_인천 1호선_인천시청_-4.jpg")], [{lat: 37.458310, lng: 126.702166}]); // 9번 출입구 근처 <환승역>
 stationManager.appendStation(["인천 1호선"], "예술회관", [-3, -1], [], [{lat: 0, lng: 0}]); // 8번 출입구 근처
 stationManager.appendStation(["인천 1호선"], "인천터미널", [-2, -1], [], [{lat: 0, lng: 0}]); // 4번 출입구 근처
 stationManager.appendStation(["인천 1호선"], "문학경기장", [-2, -1], [], [{lat: 0, lng: 0}]); // 2번 출입구 근처
 stationManager.appendStation(["인천 1호선"], "선학", [-2, -1], [], [{lat: 0, lng: 0}]); // 4번 출입구 근처 외부 승강기
 stationManager.appendStation(["인천 1호선"], "신연수", [-2, -1], [], [{lat: 0, lng: 0}]); // 1번 출입구 근처
 stationManager.appendStation(["인천 1호선"], "원인재", [-2, 1], [], [{lat: 0, lng: 0}]);  // 6번 출입구 근처 <환승역>
-stationManager.appendStation(["인천 1호선"], "동춘", [-2, -1], [], [{lat: 0, lng: 0}]); // 3번 출입구 근처
-stationManager.appendStation(["인천 1호선"], "동막", [-2, -1], [], [{lat: 0, lng: 0}]); // 1,3번 출입구 근처
+stationManager.appendStation(["인천 1호선"], "동춘", [-2, -1], [], [{lat: 37.404597, lng: 126.680302}]);
+stationManager.appendStation(["인천 1호선"], "동막", [-2, -1], [], [{lat: 37.398513, lng: 126.673819}, {lat: 37.398582, lng: 126.673174}]);
 stationManager.appendStation(["인천 1호선"], "캠퍼스타운", [-2, -1], [], [{lat: 37.387798, lng: 126.662127}, {lat: 37.387589, lng: 126.662516}, {lat: 37.388212, lng: 126.661691}]);
 stationManager.appendStation(["인천 1호선"], "테크노파크", [-2, -1], [], [{lat: 37.382009, lng: 126.656393}]);
 stationManager.appendStation(["인천 1호선"], "지식정보단지", [-2, -1], [], [{lat: 37.378277, lng: 126.645748}]);
@@ -76,3 +76,4 @@ stationManager.appendStation(["인천 1호선"], "인천대입구", [-2, -1], []
 stationManager.appendStation(["인천 1호선"], "센트럴파크", [-2, -1], [], [{lat: 37.393555, lng: 126.634813}]);
 stationManager.appendStation(["인천 1호선"], "국제업무지구", [-2, -1], [], [{lat: 37.400033, lng: 126.629742}]);
 stationManager.appendStation(["인천 1호선"], "송도달빛축제공원", [-2, -1], [], [{lat: 37.406769, lng: 126.625803}, {lat: 37.406957, lng: 126.626277}]);
+

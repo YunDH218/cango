@@ -9,6 +9,7 @@ let arrivalPoint;
 let directionsService;
 let directionsRenderer;
 let stepDisplay;
+let elevatorMarkers = [];
 // top-group search
 const topGroupEl = document.querySelector('.top-group');
 const searchTxtEl = document.querySelector('.top-group .search-text');
@@ -302,9 +303,15 @@ dimmerEl.addEventListener('click', () => {
 
 // route window
 routeBtnBackEl.addEventListener('click', () => {
+  if (elevatorMarkers.length !== 0) {
+    clearElevatorMarkers();
+    map.setZoom(12);
+    return;
+  }
   placeFocusMode();
   startPoint = undefined;
   arrivalPoint = undefined;
+  clearMarkers();
 })
 
 // create result element
@@ -614,6 +621,10 @@ showSteps = (directionResult, markersArray, stepDisplay, map) => {
         btnElevatorDisplay.style.fontSize = "14px"
         btnElevatorDisplay.style.fontWeight = "700";
         btnElevatorDisplay.style.padding = "5px";
+        btnElevatorDisplay.addEventListener('click', () => {
+          elevatorLocationDisplay(transit.departure_stop.name);
+          stepDisplay.close();
+        });
 
         btnGroup.appendChild(btnSubwayMapDisplay);
         btnGroup.appendChild(btnElevatorDisplay);
@@ -670,6 +681,27 @@ subwayMapDisplay = (stationName) => {
   if (subwayMapWindowEl.classList.contains('hidden')) {
     subwayMapWindowEl.classList.remove('hidden');
   }
+}
+elevatorLocationDisplay = (stationName) => {
+  const station = stationManager.getStation(stationName);
+  const elevatorLocation = station.getElevatorLocation();
+  console.log(elevatorLocation);
+  for (let i = 0; i < elevatorLocation.length; i++) {
+    const marker = new google.maps.Marker({
+      map: map,
+      position: elevatorLocation[i],
+      icon: require("../images/elevator_Icon.png")
+    });
+    elevatorMarkers.push(marker);
+  }
+  map.panTo(elevatorLocation[0]);
+  map.setZoom(18);
+}
+clearElevatorMarkers = () => {
+  for (var i = 0; i < elevatorMarkers.length; i++ ) {
+    elevatorMarkers[i].setMap(null);
+  }
+  elevatorMarkers.length = 0;
 }
 
 // set Interval function
