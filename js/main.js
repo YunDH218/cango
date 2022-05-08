@@ -1,3 +1,5 @@
+const { Station, stationManager, StationManager } = require("./stations");
+
 let map;
 let infowindow;
 let locationIndicator = null;
@@ -26,6 +28,11 @@ const routeBtnBackEl = document.querySelector('.route-window .btn-back');
 const startPointInputEl = document.querySelector('.route-window .start-point--search');
 const arrivalPointInputEl = document.querySelector('.route-window .arrival-point--search');
 const routeResultContainerEl = document.querySelector('.route-window .result-container');
+// station map
+const subwayMapWindowEl = document.querySelector('.subway-map');
+const floorSelectorEl = document.querySelector('.subway-map .floor-selector');
+const closeBtnEl = document.querySelector('.subway-map .btn-close');
+const stationMapEl = document.querySelector('.subway-map .station-map');
 
 // Initialize and add the map
 initMap = () => {
@@ -532,6 +539,7 @@ calculateAndDisplayRoute = (
     .then((result) => {
       directionsRenderer.setDirections(result);
       showSteps(result, markersArray, stepDisplay, map);
+      console.log(result);
     })
     .catch((e) => {
       window.alert("Directions request failed due to " + e);
@@ -546,21 +554,115 @@ showSteps = (directionResult, markersArray, stepDisplay, map) => {
 
     marker.setMap(map);
     marker.setPosition(myRoute.steps[i].start_location);
-    attachInstructionText(
-      stepDisplay,
-      marker,
-      myRoute.steps[i].instructions,
-      map
-    );
+    const content = document.createElement('div');
+    content.style.fontFamily = "sans-serif";
+    content.style.fontWeight = "400";
+    content.style.color = "#000";
+    content.style.fontSize = "16px";
+    if (myRoute.steps[i].transit) {
+      const transit = myRoute.steps[i].transit;
+      const lineEl = document.createElement('div');
+      lineEl.innerHTML = `${transit.line.short_name || transit.line.name}`;
+      lineEl.style.color = transit.line.color;
+      lineEl.style.fontWeight = "700";
+      lineEl.style.marginBottom = "5px";
+      
+      const departureStopEl = document.createElement('div');
+      departureStopEl.innerHTML = `<b>${transit.departure_stop.name}</b>에서 승차`;
+      departureStopEl.style.marginBottom = "3px";
+      departureStopEl.style.marginLeft = "3px";
+
+      const stopsBetweenEl = document.createElement('div');
+      stopsBetweenEl.innerHTML = `${transit.num_stops}개 정류장 이동\n약 ${myRoute.steps[i].duration.text} 소요`
+      stopsBetweenEl.style.color = "#656565"
+      stopsBetweenEl.style.fontSize = "14px";
+      stopsBetweenEl.style.marginBottom = "3px";
+      stopsBetweenEl.style.marginLeft = "3px";
+
+      const arrivalStopEl = document.createElement('div');
+      arrivalStopEl.innerHTML = `<b>${transit.arrival_stop.name}</b>에서 하차`;
+      arrivalStopEl.style.marginLeft = "3px";
+      content.appendChild(lineEl);
+      content.appendChild(departureStopEl);
+      content.appendChild(stopsBetweenEl);
+      content.appendChild(arrivalStopEl);
+
+      if (transit.line.vehicle.type === "SUBWAY") {
+        const btnGroup = document.createElement('div');
+        btnGroup.style.display = "flex"
+        btnGroup.style.marginTop = "5px";
+
+        const btnSubwayMapDisplay = document.createElement('span');
+        btnSubwayMapDisplay.textContent = "역사 지도";
+        btnSubwayMapDisplay.style.backgroundColor = "#30a065";
+        btnSubwayMapDisplay.style.borderRadius = "3px";
+        btnSubwayMapDisplay.style.color = "#fff";
+        btnSubwayMapDisplay.style.cursor = "pointer";
+        btnSubwayMapDisplay.style.fontFamily = "sans-serif";
+        btnSubwayMapDisplay.style.fontSize = "14px"
+        btnSubwayMapDisplay.style.fontWeight = "700";
+        btnSubwayMapDisplay.style.padding = "5px";
+        btnSubwayMapDisplay.addEventListener('click', () => {subwayMapDisplay(transit.departure_stop.name)});
+
+        const btnElevatorDisplay = document.createElement('span');
+        btnElevatorDisplay.textContent = "승강기 위치";
+        btnElevatorDisplay.style.backgroundColor = "#30a065";
+        btnElevatorDisplay.style.borderRadius = "3px";
+        btnElevatorDisplay.style.color = "#fff";
+        btnElevatorDisplay.style.cursor = "pointer";
+        btnElevatorDisplay.style.fontFamily = "sans-serif";
+        btnElevatorDisplay.style.fontSize = "14px"
+        btnElevatorDisplay.style.fontWeight = "700";
+        btnElevatorDisplay.style.padding = "5px";
+
+        btnGroup.appendChild(btnSubwayMapDisplay);
+        btnGroup.appendChild(btnElevatorDisplay);
+        content.appendChild(btnGroup);
+      }
+    } else {
+      content.textContent = myRoute.steps[i].instructions;
+    }
+    google.maps.event.addListener(marker, "click", () => {
+      stepDisplay.setContent(content);
+      stepDisplay.open(map, marker);
+    });
   }
 }
-attachInstructionText = (stepDisplay, marker, text, map) => {
-  google.maps.event.addListener(marker, "click", () => {
-    // Open an info window when the marker is clicked on, containing the text
-    // of the step.
-    stepDisplay.setContent(text);
-    stepDisplay.open(map, marker);
-  });
+
+// subway map display
+// StationManager = require("./stations");
+// Station = require("./stations");
+// stationManager = require("./stations");
+
+closeBtnEl.addEventListener('click', () => {
+  subwayMapWindowEl.classList.add('hidden');
+  floorSelectorEl.innerHTML = '';
+  stationMapEl.src = require('../images/default-station-image.jpg');
+})
+subwayMapDisplay = (stationName) => {
+  let station = stationManager.getStation(stationName);
+  if (station) {
+    let floors = station.getFloorNum();
+    for (let i = floors[0]; i <= floors[1]; i++) {
+      const btnFloor = document.createElement('div');
+      btnFloor.classList.add('btn-floor');
+      if (i < 0) {
+        btnFloor.textContent = `지하 ${-i}층`;
+      } else {
+        btnFloor.textContent = `${i+1}층`;
+      }
+      btnFloor.addEventListener('click', () => {
+
+        btnFloor.classList.add('active');
+      })
+      floorSelectorEl.appendChild(btnFloor);
+    }
+  }
+  // floorSelectorEl;
+  // stationMapEl;
+  if (subwayMapWindowEl.classList.contains('hidden')) {
+    subwayMapWindowEl.classList.remove('hidden');
+  }
 }
 
 // set Interval function

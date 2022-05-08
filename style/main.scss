@@ -17,6 +17,10 @@ h1 {
   font-size: $large;
 }
 
+b {
+  font-weight: 700;
+}
+
 body {
   #map {
     width: 100vw;
@@ -296,6 +300,88 @@ body {
           box-shadow: 0.2em 0.2em 0.2em rgba($color: $mainTextColor, $alpha: 0.2);
         }
       }
-    }   
+    } 
+  }
+  // subway map
+  .subway-map {
+    z-index: 1;
+    transition: .4s;
+    &.hidden {
+      opacity: 0;
+      visibility: hidden;
+    }
+    .dimmer {
+      position: absolute;
+      width: 100vw;
+      height: 100vh;
+      top: 0;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      background-color: rgba($color: #000, $alpha: 0.5);
+      display: block;
+    }
+    .container {
+      position: absolute;
+      width: 90vw;
+      height: 80vh;
+      top: 10vh;
+      bottom: 10vh;
+      left: 5vw;
+      right: 5vw;
+      background-color: $mainBGColor;
+      border-radius: 10px;
+      .window-control {
+        position: relative;
+        display: flex;
+        height: 5vh;
+        background-color: #eee;
+        overflow: hidden;
+        border-radius: 10px 10px 0 0;
+        box-sizing: border-box;
+        box-shadow: inset 0 -3px 5px rgba($color: #000, $alpha: .3);
+        .floor-selector {
+          position: relative;
+          display: flex;
+          .btn-floor {
+            height: 4.5vh;
+            color: #656565;
+            background-color: #eee;
+            padding: 10px 20px;
+            border-radius: 10px 10px 0 0;
+            margin-top: .5vh;
+            box-sizing: border-box;
+            box-shadow: 1px -1px 3px rgba($color: #000, $alpha: .3);
+            cursor: pointer;
+            transition: .2s;
+            &.active {
+              color: #000;
+              background-color: #fff;
+              border-bottom: solid 6px #30a065;
+            }
+            &:hover {
+              color: #000;
+            }
+          }
+        }
+        .btn-close {
+          position: absolute;
+          top: calc(50% - 10px);
+          right: 10px;
+          color: $mainTextColor;
+          font-size: $large;
+          cursor: pointer;
+          &:hover {
+            color: $subTextColor;
+          }
+        }
+      }
+      .image-container {
+        .station-map {
+          display: block;
+          margin: auto;
+        }
+      }
+    }
   }
 }

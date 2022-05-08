@@ -24,6 +24,7 @@
 
   <!-- script -->
   <script defer src="./js/main.js"></script>
+  <script src="./js/stations.js"></script>
   <!-- style -->
   <link rel="stylesheet" href="./style/main.scss" />
   
@@ -84,6 +85,20 @@
       <div class="arrival-point">
         <input type="text" class="arrival-point--search" placeholder="도착지 입력"/>
       </div>
+    </div>
+  </section>
+
+  <!-- SUBWAY MAP DISPLAY -->
+  <section class="subway-map">
+    <div class="dimmer"></div>
+    <div class="container">
+      <div class="window-control">
+        <div class="floor-selector">
+          <div class="btn-floor">1층</div>
+        </div>
+        <div class="btn-close material-icons">close</div>
+      </div>
+      <div class="image-container"><img class="station-map" src="./images/default-station-image.jpg" alt="station map"></div>
     </div>
   </section>
 
