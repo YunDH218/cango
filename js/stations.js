@@ -60,7 +60,7 @@ stationManager.appendStation(["인천 1호선"], "부평", [-4, 0], [], [{lat: 0
 stationManager.appendStation(["인천 1호선"], "동수", [-4, -1], [], [{lat: 0, lng: 0}]); // 2번 출입구 근처
 stationManager.appendStation(["인천 1호선"], "부평삼거리", [-4, -1], [], [{lat: 0, lng: 0}]); // 2번 출입구 근처
 stationManager.appendStation(["인천 1호선"], "간석오거리", [-4, -1], [], [{lat: 0, lng: 0}]); // 5번 출입구 근처
-stationManager.appendStation(["인천 1호선", "인천 2호선"], "인천시청", [-4, -1], [], [{lat: 0, lng: 0}]); // 9번 출입구 근처 <환승역>
+stationManager.appendStation(["인천 1호선", "인천 2호선"], "인천시청", [-4, -1], [require("../images/station_인천 1호선_인천시청_-4.jpg")], [{lat: 0, lng: 0}]); // 9번 출입구 근처 <환승역>
 stationManager.appendStation(["인천 1호선"], "예술회관", [-3, -1], [], [{lat: 0, lng: 0}]); // 8번 출입구 근처
 stationManager.appendStation(["인천 1호선"], "인천터미널", [-2, -1], [], [{lat: 0, lng: 0}]); // 4번 출입구 근처
 stationManager.appendStation(["인천 1호선"], "문학경기장", [-2, -1], [], [{lat: 0, lng: 0}]); // 2번 출입구 근처

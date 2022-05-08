@@ -378,6 +378,8 @@ body {
       }
       .image-container {
         .station-map {
+          max-width: 85vw;
+          max-height: 75vh;
           display: block;
           margin: auto;
         }

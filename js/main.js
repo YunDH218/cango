@@ -634,15 +634,16 @@ showSteps = (directionResult, markersArray, stepDisplay, map) => {
 // Station = require("./stations");
 // stationManager = require("./stations");
 
+const defaultImg = require('../images/default-station-image.jpg');
 closeBtnEl.addEventListener('click', () => {
   subwayMapWindowEl.classList.add('hidden');
   floorSelectorEl.innerHTML = '';
-  stationMapEl.src = require('../images/default-station-image.jpg');
 })
 subwayMapDisplay = (stationName) => {
   let station = stationManager.getStation(stationName);
   if (station) {
     let floors = station.getFloorNum();
+    if (station.getImgSrc()) stationMapEl.src = station.getImgSrc()[0];
     for (let i = floors[0]; i <= floors[1]; i++) {
       const btnFloor = document.createElement('div');
       btnFloor.classList.add('btn-floor');
@@ -652,7 +653,13 @@ subwayMapDisplay = (stationName) => {
         btnFloor.textContent = `${i+1}층`;
       }
       btnFloor.addEventListener('click', () => {
-
+        let el = floorSelectorEl.firstChild;
+        if (el.classList.contains('active')) el.classList.remove('active');
+        while (el = el.nextSibling) {
+          if (el.classList.contains('active')) el.classList.remove('active');
+        }
+        if (station.getImgSrc()[i - floors[0]]) stationMapEl.src = station.getImgSrc()[i - floors[0]];
+        else stationMapEl.src = defaultImg;
         btnFloor.classList.add('active');
       })
       floorSelectorEl.appendChild(btnFloor);
